@@ -1,0 +1,36 @@
+{
+  "name": "ringo-agent",
+  "version": "1.0.0",
+  "description": "The agent",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ringo-unicen/agent.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ringo-unicen/agent/issues"
+  },
+  "homepage": "https://github.com/ringo-unicen/agent#readme",
+  "devDependencies": {
+    "grunt": "^0.4.5",
+    "grunt-concurrent": "^2.0.1",
+    "grunt-contrib-jshint": "^0.11.2",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-nodemon": "^0.4.0",
+    "load-grunt-tasks": "^3.2.0"
+  },
+  "dependencies": {
+    "body-parser": "^1.13.3",
+    "cors": "^2.7.1",
+    "express": "^4.13.3",
+    "glob": "^5.0.14",
+    "lodash": "^3.10.1",
+    "morgan": "^1.6.1"
+  }
+}
