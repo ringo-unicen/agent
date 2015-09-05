@@ -18,6 +18,7 @@ var config = {
 
 
 var forward = function () {
+    console.log('Setting up router to forward requests to', config.target);
     var preroute = iptabler();
     preroute
         .t('nat')
@@ -26,7 +27,7 @@ var forward = function () {
         .dport(config.target.port)
         .j('DNAT')
         .toDest(config.target.ip + ':' + config.target.port);
-     //TODO tabler.exec()
+     var pre = preroute.exec();
      console.log(preroute._args);
 
      var posroute = iptabler();
@@ -39,7 +40,12 @@ var forward = function () {
         .j('SNAT')
         .toSource(getIp().address);
      console.log(posroute._args);
-     return Bluebird.resolve("OK");
+     var pos = posroute.exec();
+     console.log('Executed iptables commands');
+     return Bluebird.join(pre, pos).spread(function (res1, res2) {
+         console.log('Successfully updated firewall configuration');
+         return 'OK';
+     });
 
      //TODO Rollback in case of error and report
     // Example: 
@@ -51,7 +57,12 @@ var serve = function () {
     console.log('Resetting all rules to default');
     var flush = iptabler().t('nat').F();
     console.log(flush._args);
-    return Bluebird.resolve('OK');
+    //iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
+    console.log('Setting up local port forwarding');
+    return Bluebird.resolve(flush.exec()).then(function (result) {
+        console.log('Successfully updated firewall configuration');
+        return 'OK';
+    });
 };
 
 
