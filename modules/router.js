@@ -2,6 +2,7 @@
 var _ = require('lodash');
 var iptabler = require('iptabler');
 var Bluebird = require('bluebird');
+var exec = require('child-process-promise').exec;
 
 
 var getIp = function () {
@@ -40,9 +41,11 @@ var forward = function () {
         .j('SNAT')
         .toSource(getIp().address);
      console.log(posroute._args);
-     var pos = posroute.exec();
-     console.log('Executed iptables commands');
-     return Bluebird.join(pre, pos).spread(function (res1, res2) {
+     return Bluebird.resolve(pre).then(function (res1) {
+         var pos = posroute.exec();
+         console.log('Executed iptables commands');
+         return [res1, pos];
+     }).spread(function (res1, res2) {
          console.log('Successfully updated firewall configuration');
          return 'OK';
      });
@@ -55,11 +58,7 @@ var forward = function () {
 
 var serve = function () {
     console.log('Resetting all rules to default');
-    var flush = iptabler().t('nat').F();
-    console.log(flush._args);
-    //iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 8080
-    console.log('Setting up local port forwarding');
-    return Bluebird.resolve(flush.exec()).then(function (result) {
+    return Bluebird.resolve(exec('iptables -t nat -F')).then(function (result) {
         console.log('Successfully updated firewall configuration');
         return 'OK';
     });
